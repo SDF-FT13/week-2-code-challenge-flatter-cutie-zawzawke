@@ -42,3 +42,16 @@ document.getElementById("character-bar").addEventListener("click",(event) => {
     }
 
 });
+
+const votesForm = document.getElementById("votes-form");
+
+votesForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const voteInput = document.getElementById("votes").value;
+    let currentVotes = parseInt(characterVotes.textContent, 10);
+    characterVotes.textContent = currentVotes + parseInt(voteInput, 10);
+
+    votesForm.reset();
+
+});
