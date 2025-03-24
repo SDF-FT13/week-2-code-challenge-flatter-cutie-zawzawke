@@ -44,7 +44,6 @@ document.getElementById("character-bar").addEventListener("click",(event) => {
 });
 
 const votesForm = document.getElementById("votes-form");
-
 votesForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -55,3 +54,114 @@ votesForm.addEventListener("submit", (event) => {
     votesForm.reset();
 
 });
+
+const resetBtn = document.getElementById("reset-btn");
+resetBtn.addEventListener("click", () => {
+    characterVotes.textContent = 0;
+});
+
+
+//BONUS
+//Submit the form to add a new character
+const characterForm = document.getElementById("character-form");
+
+characterForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const newName = document.getElementById("new-name").value;
+    const newImage = document.getElementById("image-url").value;
+
+    if (!newName || !newImage) {
+        alert("Please fill out both fields.");
+        return;
+    }
+
+    const newCharacter = {
+        id: Date.now(),
+        name: newName,
+        image: newImage,
+        votes: 0
+    };
+
+
+    const span = document.createElement("span");
+    span.textContent = newCharacter.name;
+    span.classList.add("character-name");
+    span.dataset.id = newCharacter.id;
+    characterBar.appendChild(span);
+
+
+
+    characterName.textContent = newCharacter.name;
+    characterImage.src = newCharacter.image;
+    characterVotes.textContent = 0;
+    characterImage.alt = newCharacter.name;
+
+    characterForm.reset();
+});
+
+//saves votes to backend
+votesForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    
+    const voteInput = parseInt(document.getElementById("votes").value, 10);
+    let newVoteCount = parseInt(characterVotes.textContent, 10) + voteInput;
+
+    fetch(`${baseURL}/${detailedInfo.dataset.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ votes: newVoteCount })
+    })
+    .then(response => response.json())
+    .then(updatedCharacter => {
+        characterVotes.textContent = updatedCharacter.votes;
+    });
+
+    votesForm.reset();
+});
+
+
+
+//Saves new characters to backend
+characterForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const newName = document.getElementById("new-name").value;
+    const newImage = document.getElementById("image-url").value;
+
+    if (!newName || !newImage) {
+        alert("Please fill out both fields.");
+        return;
+    }
+
+    const newCharacter = { name: newName, image: newImage, votes: 0 };
+
+    fetch(baseURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCharacter)
+    })
+    .then(response => response.json())
+    .then(addedCharacter => {
+        // Add to character bar
+        const span = document.createElement("span");
+        span.textContent = addedCharacter.name;
+        span.classList.add("character-name");
+        span.dataset.id = addedCharacter.id;
+        characterBar.appendChild(span);
+
+        // Display character
+        characterName.textContent = addedCharacter.name;
+        characterImage.src = addedCharacter.image;
+        characterVotes.textContent = addedCharacter.votes;
+        characterImage.alt = addedCharacter.name;
+    });
+
+    characterForm.reset();
+});
+
+
+
+
+
+
