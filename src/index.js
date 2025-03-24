@@ -19,3 +19,26 @@ document.addEventListener("DOMContentLoaded", () => {
         
 
 });
+
+const detailedInfo = document.getElementById("detailed-info");
+const characterName = document.getElementById("name");
+const characterImage = document.getElementById("image");
+const characterVotes = document.getElementById("vote-count");
+const baseURL = "http://localhost:3000/characters";
+
+document.getElementById("character-bar").addEventListener("click",(event) => {
+    if (event.target.classList.contains("character-name")) {
+        const characterId = event.target.dataset.id;
+
+        fetch(`${baseURL}/${characterId}`)
+           .then(response => response.json())
+           .then(character => {
+               characterName.textContent = character.name;
+               characterImage.src = character.image;
+               characterVotes.textContent = character.votes;
+               characterImage.alt = character.name;
+               detailedInfo.dataset.id = character.id;
+           });
+    }
+
+});
